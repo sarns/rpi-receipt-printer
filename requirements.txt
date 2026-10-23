@@ -1,2 +1,7 @@
 pyusb
 pillow
+caldav
+icalendar
+requests
+# Do not install niquests: it replaces urllib3 with urllib3-future, which tries
+# HTTP/3 and fails on this network ("Message too long").

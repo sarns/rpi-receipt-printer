@@ -8,10 +8,12 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import textwrap
 import urllib.parse
 import urllib.request
 from datetime import datetime
 
+import calendar_events
 import ha_energy
 from weather_icons import category, icon
 
@@ -80,6 +82,23 @@ def build_lines(data: dict) -> list[tuple[str, str]]:
     return out
 
 
+def calendar_lines() -> list[tuple[str, str]]:
+    """Upcoming Family calendar entries; omitted if there are none or iCloud is unreachable."""
+    try:
+        events = calendar_events.fetch()
+    except Exception as exc:
+        print(f"calendar section skipped: {exc!r}", file=sys.stderr)
+        return []
+    if not events:
+        return []
+    out = [("normal", "-" * WIDTH), ("bold", f"Heute: {calendar_events.CALENDAR}")]
+    for ev in events:
+        out.append(("bold", calendar_events.label(ev)))
+        out += [("normal", "  " + part) for part in
+                textwrap.wrap(ev["title"], WIDTH - 2) or [""]]
+    return out
+
+
 def energy_lines() -> list[tuple[str, str]]:
     """Battery level and yesterday's solar/consumption; skipped if HA is unreachable."""
     try:
@@ -139,7 +158,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry", action="store_true", help="print to stdout only")
     args = ap.parse_args()
-    lines = build_lines(fetch()) + energy_lines() + room_lines()
+    lines = build_lines(fetch()) + calendar_lines() + energy_lines() + room_lines()
     if args.dry:
         print("\n".join(f"[icon {t}]" if s == "icon" else t for s, t in lines))
     else:

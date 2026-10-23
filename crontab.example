@@ -1,0 +1,3 @@
+# Morning report at 07:45 every day (the Pi runs in Europe/Berlin).
+# Install with:  crontab crontab.example   (replaces the user's crontab!)
+45 7 * * * cd /home/sarns/rpi-receipt-printer && /home/sarns/printer-venv/bin/python weather_report.py >> /home/sarns/rpi-receipt-printer/morning.log 2>&1
