@@ -1,0 +1,2 @@
+# SNBC / Orient BTP-2002NP (vendor-specific USB interface, no kernel lp driver)
+SUBSYSTEM=="usb", ATTR{idVendor}=="154f", ATTR{idProduct}=="1001", MODE="0666", GROUP="plugdev"
